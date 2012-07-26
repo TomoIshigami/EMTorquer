@@ -62,6 +62,6 @@ public class ColorCubeApplet extends Applet {
   
   public static void main(String[] args) {
     ColorCubeApplet applet = new ColorCubeApplet();
-    Frame frame = new MainFrame(applet, 250, 250);
+    Frame frame = new MainFrame(applet, 300, 300);
   }
 }
