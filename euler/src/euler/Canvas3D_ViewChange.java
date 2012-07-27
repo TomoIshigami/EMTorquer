@@ -159,7 +159,7 @@ public class Canvas3D_ViewChange extends Canvas3D
  {
 
   //============================================================================
-  //マウスが動いた時に呼ばれるメソッド : Mouse Event Handler for Mouse moved
+  //マウスが動いた時に呼ばれるメソッド : Mouse Event Handler for Mouse Moved
   //============================================================================
   public void mouseMoved(MouseEvent event)
   {
@@ -170,24 +170,24 @@ public class Canvas3D_ViewChange extends Canvas3D
 
 
   //============================================================================
-  //マウスがドラッグされた時に呼ばれるメソッド
+  //マウスがドラッグされた時に呼ばれるメソッド : Mouse Event Handler for Mouse Dragged
   //============================================================================
   public void mouseDragged(MouseEvent event)
   {
 
-   //現在のx座標を取得
+   //現在のx座標を取得 : Attain mouse's x,y coordinate
    new_x = event.getX();
    new_y = event.getY();
 
-   //thetaとphiの値を更新
+   //thetaとphiの値を更新 : Update theta and phi coordinate from mouse's coord
    //（マウスの動きと視点の動きの向きはここで調整する！）
    theta -= sensitivity*(new_y - pre_y);
    phi += sensitivity*(new_x - pre_x);
 
    //===========================================================================
-   //極座標を直交座標へ直す
+   //極座標を直交座標へ直す : Convert spherical coord to cartisian coord
 
-   //theta関係の計算（球座標→直交座標）
+   //theta関係の計算（球座標→直交座標） 
    camera_y = camera_distance * (float)Math.sin(theta);
    camera_xz = camera_distance * (float)Math.cos(theta);
 
@@ -196,31 +196,31 @@ public class Canvas3D_ViewChange extends Canvas3D
    camera_z =  camera_xz * (float)Math.cos(phi);
 
    //===========================================================================
-   //座標変換クラスを用意する
+   //座標変換クラスを用意する : Prepare transformation class for this change
 
-   //カメラの位置ベクトルを作る
+   //カメラの位置ベクトルを作る : Create Camera vector
    Vector_camera_pos.x = camera_x;
    Vector_camera_pos.y = camera_y;
    Vector_camera_pos.z = camera_z;
 
-   //座標変換クラスを初期化（重要！）
+   //座標変換クラスを初期化（重要！） : Reinitialize the transformation class
    Transform_camera_pos.setIdentity();
 
-   //平行移動の座標変換を用意
+   //平行移動の座標変換を用意 : Apply translation vector
    Transform_camera_pos.setTranslation(Vector_camera_pos);
     
-   //回転の座標変換を用意
+   //回転の座標変換を用意 : Apply rotation
    Transform_camera_theta.rotX(-theta);
    Transform_camera_phi.rotY(phi);
 
    //===========================================================================
    //カメラの座標変換実行
    
-   //合成する
+   //合成する : amalgamate transforms
    Transform_camera_phi.mul(Transform_camera_theta);
    Transform_camera_pos.mul(Transform_camera_phi);
 
-   //座標変換実行
+   //座標変換実行 : apply transformation
    Camera.setTransform(Transform_camera_pos);
 
    //===========================================================================
