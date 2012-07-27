@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package euler;
 
 //******************************************************************************
@@ -21,11 +17,11 @@ package euler;
 //マウス感度は“sensitivity”で調節
 //******************************************************************************
 
-//全般のためのインポート
+// 全般のためのインポート
 import java.awt.*;
 import java.awt.event.*;
 
-//Java3D関係のインポート
+// Java3D 関係のインポート
 import javax.media.j3d.*;
 import javax.vecmath.*;
 import com.sun.j3d.utils.universe.*;
@@ -35,35 +31,35 @@ public class Canvas3D_ViewChange extends Canvas3D
 {
  
  //=============================================================================
- //クラスのフィールド
+ //クラスのフィールド : Fields in Class
 
- //マウスの動きに対する感度
+ //マウスの動きに対する感度 : Mouse sensitivity
  float sensitivity;
 
- //動径の長さ（座標中心と視点との距離）
+ //動径の長さ（座標中心と視点との距離） : Distance of camera from Origin
  float camera_distance;
 
- //新規取得するマウスのx,y座標
+ //新規取得するマウスのx,y座標 : New X,Y coordinate of mouse
  int new_x, new_y;
  
- //前に取得したマウスのx,y座標
+ //前に取得したマウスのx,y座標 : Previus X,Y coordinate of mouse
  int pre_x, pre_y;
 
- //SimpleUniverseをフィールドとしてもっておく。
+ //SimpleUniverseをフィールドとしてもっておく。 : Declare "universe" (not allocated yet)
  SimpleUniverse universe;
 
- //視点の座標変換のためのグループ
+ //視点の座標変換のためのグループ : Transformation group
  TransformGroup Camera;
 
- //視点（カメラ）の座標
+ //視点（カメラ）の座標 : Camera's coordinates
  float camera_x, camera_y, camera_z, camera_xz, camera_xy, camera_yz = 0;
 
- //極座標のパラメータ
+ //極座標のパラメータ : Spherical Coordinate of Camera ( + camera distance above)
  //（初期位置の設定も行う）
- float phi = (float)Math.PI/8;
+ float phi =  (float)Math.PI/8;
  float theta =  (float)Math.PI/8;
 
- //座標変換クラス
+ //座標変換クラス : (r, phi, theta)
  Transform3D Transform_camera_pos;   //カメラの位置
  Transform3D Transform_camera_phi;   //phiに関する回転
  Transform3D Transform_camera_theta; //thetaに関する回転
@@ -89,67 +85,67 @@ public class Canvas3D_ViewChange extends Canvas3D
   universe = new SimpleUniverse(this);
 
   //============================================================================
-  //視点（カメラ）について設定
+  //視点（カメラ）について設定 : Camera Setting
   //============================================================================
 
   //------------------------------------------------------------------  
-  //カメラ全般の初期設定
+  //カメラ全般の初期設定 : Initialization
 
-  //SimpleUniverseが生成したViewingPlatformを取得  
+  //SimpleUniverseが生成したViewingPlatformを取得  : Obtain ViewingPlatform obj in "universe"
   ViewingPlatform vp = universe.getViewingPlatform();
 
-  //ViewingPlatformの座標変換グループとして，“Camera”を割り当てる
+  //ViewingPlatformの座標変換グループとして，“Camera”を割り当てる :  Transformation Group for ViewingPlatform
   Camera = vp.getViewPlatformTransform();
 
   //------------------------------------------------------------------  
-  //カメラの位置に関する初期設定
+  //カメラの位置に関する初期設定 : Initial Position
 
-  //theta関係の計算（球座標→直交座標）
+  //theta関係の計算（球座標→直交座標）: Project r to y-axis and to x-z domain
   camera_y = camera_distance * (float)Math.sin(theta);
   camera_xz = camera_distance * (float)Math.cos(theta);
 
-  //phi関係の計算（球座標→直交座標）
+  //phi関係の計算（球座標→直交座標）: Project the image on x-z domain to x-axis and z-axis
   camera_x =  camera_xz * (float)Math.sin(phi);
   camera_z =  camera_xz * (float)Math.cos(phi);
 
-  //カメラの位置ベクトルを用意
+  //カメラの位置ベクトルを用意 : Prepare Camera vector
   Vector_camera_pos = new Vector3f(camera_x, camera_y, camera_z);
 
-  //カメラ位置の座標変換クラスを用意
+  //カメラ位置の座標変換クラスを用意 : Prepare transformation class for the camera
   Transform_camera_pos = new Transform3D();
 
-  //初期位置設定ための座標変換を用意する。
+  //初期位置設定ための座標変換を用意する。 : Translate to the initial camera position
   Transform_camera_pos.setTranslation(Vector_camera_pos);
 
   //------------------------------------------------------------------  
-  //カメラの向きに関する初期設定
+  //カメラの向きに関する初期設定 : Initial direction of camera
 
-  //カメラの向きの座標変換クラスを用意
+  //カメラの向きの座標変換クラスを用意 : Camera direction in spherical coord
   Transform_camera_phi = new Transform3D();
   Transform_camera_theta = new Transform3D(); 
 
-  //カメラの向きの初期設定
+  //カメラの向きの初期設定 : Initial direction of Camera (in spherical coord)
   Transform_camera_theta.rotX(-theta);
   Transform_camera_phi.rotY(phi);
 
   //------------------------------------------------------------------  
-  //以上の設定をカメラに反映
+  //以上の設定をカメラに反映 : Reflect all the above setting
 
-  //合成する
+  //合成する : Amalgamate the transformation
   Transform_camera_phi.mul(Transform_camera_theta);
   Transform_camera_pos.mul(Transform_camera_phi);
 
-  //座標変換実行
+  //座標変換実行 : Apply transform
   Camera.setTransform(Transform_camera_pos);
 
   //============================================================================
-  //マウスの設定
+  //マウスの設定 : Setting for Mouse
   //============================================================================
 
-  //マウス入力用のクラス，mouse_classをインスタンス化
+  //マウス入力用のクラス，mouse_classをインスタンス化 : Create an instance of class that handles mouse input
   mouse_ViewChange mouse = new mouse_ViewChange();
 
-  //このフレームにマウス入力クラスを登録
+  //このフレームにマウス入力クラスを登録 : Insert this class into frame
   addMouseMotionListener(mouse);
 
  }
@@ -157,13 +153,13 @@ public class Canvas3D_ViewChange extends Canvas3D
 
 
  //*****************************************************************************
- //mouse_ViewChange：マウス入力用のクラス
+ //mouse_ViewChange：マウス入力用のクラス : Mouse Input Class
  //*****************************************************************************
  class mouse_ViewChange implements MouseMotionListener
  {
 
   //============================================================================
-  //マウスが動いた時に呼ばれるメソッド
+  //マウスが動いた時に呼ばれるメソッド : Mouse Event Handler for Mouse moved
   //============================================================================
   public void mouseMoved(MouseEvent event)
   {
