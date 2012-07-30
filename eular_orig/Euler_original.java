@@ -32,8 +32,6 @@ public class Euler implements MouseMotionListener
  //曲線のパラメータ : Parameter for the spring's curvature
  double radius = 2.0d;  // Radius of Spring
  int z_range = 10;      // Range in Z-direction (Effectively # of turns)
- int x_range = 10;      // Range in X-direction
- int y_range = 10;      // Range in Y-direction
  int data_point=60;     // Data Points per Turn
 
  //スライドバー : SlideBar
@@ -131,95 +129,31 @@ public class Euler implements MouseMotionListener
   //universeへ登録 : Add this axis to "universe"
   universe.addBranchGraph(axis.Axis_group);
 
+
   //============================================================================
-  //らせん状の補助線を書く : Draw Helical Line - Z-axis
+  //らせん状の補助線を書く : Draw Helical Line
 
   //らせん状に頂点を打って，短い線分で曲線を表現 : Draw points on Helix and connect them with short lines
-  Point3d[] line_vertex_z = new Point3d[data_point*z_range]; // Allocate space to put coordinates of vertices
+  Point3d[] line_vertex = new Point3d[data_point*z_range]; // Allocate space to put coordinates of vertices
   for(int i=0;i < data_point*z_range;i++) // Parametrize the vertices with euler eqn
   {
-   line_vertex_z[i] = new Point3d(
-           radius*Math.cos(2*Math.PI*i/data_point), 
-           radius*Math.sin(2*Math.PI*i/data_point), 
-           radius*((i + z_range*data_point/2)/4)/data_point // radius*(i - z_range*data_point/2)/data_point
-           );
+   line_vertex[i] = new Point3d(radius*Math.cos(2*Math.PI*i/data_point), radius*Math.sin(2*Math.PI*i/data_point), radius*(i - z_range*data_point/2)/data_point);
   } 
   //連続する点を指定（小区間に分割することも可能） : # of data points in a strip
-  int[] strip_z = {data_point*z_range};
+  int[] strip = {data_point*z_range};
   //折れ線のオブジェクトを作成 : Create a LineStripArray obj to which we'll store vertices coordinates
-  LineStripArray line_z = new LineStripArray(
-          line_vertex_z.length, 
-          GeometryArray.COORDINATES, 
-          strip_z);
+  LineStripArray line = new LineStripArray(line_vertex.length, GeometryArray.COORDINATES, strip);
   //折れ線オブジェクトに頂点座標を登録 : Store coordinates
-  line_z.setCoordinates(0, line_vertex_z);
+  line.setCoordinates(0, line_vertex);
   //Shape3Dとして図形オブジェト化 : Create Shape3D obj to which we store resulting shape
-  Shape3D line_shape_z = new Shape3D(line_z);
+  Shape3D line_shape = new Shape3D(line);
   //「枝」を作成 : Create a branch group for it.
-  BranchGroup line_group_z = new BranchGroup();
+  BranchGroup line_group = new BranchGroup();
   //折れ線を「枝」に登録 : Store the shape into this branch group
-  line_group_z.addChild(line_shape_z);
+  line_group.addChild(line_shape);
   //「枝」をuniverseに登録 : Insert the branch group to "universe"
-  universe.addBranchGraph(line_group_z);  
+  universe.addBranchGraph(line_group);  
 
-  //============================================================================
-  //らせん状の補助線を書く : Draw Helical Line 2 - X-axis
-
-  //らせん状に頂点を打って，短い線分で曲線を表現 : Draw points on Helix and connect them with short lines
-  Point3d[] line_vertex_x = new Point3d[data_point*x_range]; // Allocate space to put coordinates of vertices
-  for(int i=0;i < data_point*x_range;i++) // Parametrize the vertices with euler eqn
-  {
-   line_vertex_x[i] = new Point3d(
-           radius*((i + x_range*data_point/2)/4)/data_point, // radius*(i - x_range*data_point/2)/data_point,
-           radius*Math.cos(2*Math.PI*i/data_point), 
-           radius*Math.sin(2*Math.PI*i/data_point)
-           );
-  } 
-  //連続する点を指定（小区間に分割することも可能） : # of data points in a strip
-  int[] strip_x = {data_point*x_range};
-  //折れ線のオブジェクトを作成 : Create a LineStripArray obj to which we'll store vertices coordinates
-  LineStripArray line_x = new LineStripArray(line_vertex_x.length, 
-          GeometryArray.COORDINATES, strip_x);
-  //折れ線オブジェクトに頂点座標を登録 : Store coordinates
-  line_x.setCoordinates(0, line_vertex_x);
-  //Shape3Dとして図形オブジェト化 : Create Shape3D obj to which we store resulting shape
-  Shape3D line_shape_x = new Shape3D(line_x);
-  //「枝」を作成 : Create a branch group for it.
-  BranchGroup line_group_x = new BranchGroup();
-  //折れ線を「枝」に登録 : Store the shape into this branch group
-  line_group_x.addChild(line_shape_x);
-  //「枝」をuniverseに登録 : Insert the branch group to "universe"
-  universe.addBranchGraph(line_group_x); 
-  
-  //============================================================================
-  //らせん状の補助線を書く : Draw Helical Line 2 - Y-axis
-
-  //らせん状に頂点を打って，短い線分で曲線を表現 : Draw points on Helix and connect them with short lines
-  Point3d[] line_vertex_y = new Point3d[data_point*y_range]; // Allocate space to put coordinates of vertices
-  for(int i=0;i < data_point*y_range;i++) // Parametrize the vertices with euler eqn
-  {
-   line_vertex_y[i] = new Point3d(
-           radius*Math.sin(2*Math.PI*i/data_point), 
-           radius*((i + y_range*data_point/2)/4)/data_point, // radius*(i - y_range*data_point/2)/data_point,
-           radius*Math.cos(2*Math.PI*i/data_point)
-           );
-  } 
-  //連続する点を指定（小区間に分割することも可能） : # of data points in a strip
-  int[] strip_y = {data_point*y_range};
-  //折れ線のオブジェクトを作成 : Create a LineStripArray obj to which we'll store vertices coordinates
-  LineStripArray line_y = new LineStripArray(line_vertex_y.length, 
-          GeometryArray.COORDINATES, strip_y);
-  //折れ線オブジェクトに頂点座標を登録 : Store coordinates
-  line_y.setCoordinates(0, line_vertex_y);
-  //Shape3Dとして図形オブジェト化 : Create Shape3D obj to which we store resulting shape
-  Shape3D line_shape_y = new Shape3D(line_y);
-  //「枝」を作成 : Create a branch group for it.
-  BranchGroup line_group_y = new BranchGroup();
-  //折れ線を「枝」に登録 : Store the shape into this branch group
-  line_group_y.addChild(line_shape_y);
-  //「枝」をuniverseに登録 : Insert the branch group to "universe"
-  universe.addBranchGraph(line_group_y); 
-  
   //============================================================================
   //球を書く : Draw Sphere
 
@@ -229,8 +163,7 @@ public class Euler implements MouseMotionListener
   material.setDiffuseColor(0.0f,1.0f,1.0f);
   appearance.setMaterial(material);
   //球を生成 : Create Sphere Object
-  // Sphere sphere = new Sphere(0.6f,appearance);
-  Sphere sphere = new Sphere(0.3f,appearance);
+  Sphere sphere = new Sphere(0.6f,appearance);
   //「枝」を作成 : Create a branch group for it
   BranchGroup sphere_group = new BranchGroup();
   //座標変換グループ : Create Coordinate Transformation Group
@@ -245,11 +178,7 @@ public class Euler implements MouseMotionListener
   universe.addBranchGraph(sphere_group);
   //初期位置へ座標変換する : Transform the initial coordinate
   sphere_transform = new Transform3D();
-  // sphere_vector = new Vector3f((float)radius,0,0);
-  sphere_vector = new Vector3f(
-          (float)radius, 0,
-          (float)radius*((z_range*data_point/2)/4)/data_point
-          );
+  sphere_vector = new Vector3f((float)radius,0,0);
   sphere_transform.setTranslation(sphere_vector); // Translate via specified vector
   sphere_tg.setTransform(sphere_transform);     // Apply translation
 
@@ -259,11 +188,8 @@ public class Euler implements MouseMotionListener
  
   //線分の頂点を定義 : Define a line connecting (0,0,0) and (r,0,0) (initial position)
   Point3d[] line_vertex2 = new Point3d[2];
-  // line_vertex2[0] = new Point3d(0, 0, 0);
-  line_vertex2[0] = new Point3d(0, 0, radius*((z_range*data_point/2)/4)/data_point);
-  // line_vertex2[1] = new Point3d(radius, 0, 0);
-  line_vertex2[1] = new Point3d(radius, 0, radius*((z_range*data_point/2)/4)/data_point); 
-  
+  line_vertex2[0] = new Point3d(0, 0, 0);
+  line_vertex2[1] = new Point3d(radius, 0, 0);  
   //連続する点を指定（小区間に分割することも可能）: Involve two points
   int[] strip2 = {2};
   //折れ線オブジェクトに座標を登録。（色をつけるためのには引数にGeometryArray.COLOR_3が必要)
@@ -339,9 +265,7 @@ public class Euler implements MouseMotionListener
    //球を移動させる先の位置ベクトル : Compute the next position for the sphere
    sphere_vector.x = (float)radius*(float)Math.cos(2*Math.PI*bar_value/data_point);
    sphere_vector.y = (float)radius*(float)Math.sin(2*Math.PI*bar_value/data_point);
-   // sphere_vector.z = (float)radius*(bar_value - z_range*data_point/2)/data_point;  
-   sphere_vector.z = (float)radius*((bar_value + z_range*data_point/2)/4)/data_point;  
-   
+   sphere_vector.z = (float)radius*(bar_value - z_range*data_point/2)/data_point;  
    //平行移動の座標変換 : Translate by specified vector
    sphere_transform.setTranslation(sphere_vector);
    //座標変換実行 : apply transformation
@@ -358,8 +282,7 @@ public class Euler implements MouseMotionListener
    //線分を移動させる先の位置ベクトル : Translate line_transform2 (the other end) along Z-axis
    line_vector.x = 0.0f; 
    line_vector.y = 0.0f; 
-   // line_vector.z = (float)radius*(bar_value - z_range*data_point/2)/data_point;
-   line_vector.z = (float)radius*((bar_value)/4)/data_point;
+   line_vector.z = (float)radius*(bar_value - z_range*data_point/2)/data_point;
    //平行移動の座標変換 : Apply translation
    line_transform2.setTranslation(line_vector);
    //座標変換を合成 : Produce the new coordinates (?? Makes no sense to me ??)
